@@ -292,9 +292,10 @@ void on_change_systray(void *obj)
     }
 
     TrayWindow *traywin;
-    GSList *l;
-    int i;
-    for (i = 1, l = systray.list_icons; l; i++, l = l->next) {
+    GSList *l = systray.list_icons;
+    int i = 1;
+    while (l) {
+        GSList *next = l->next;
         traywin = (TrayWindow *)l->data;
 
         traywin->y = posy;
@@ -347,8 +348,14 @@ void on_change_systray(void *obj)
                         traywin->height);
             XMoveResizeWindow(server.display, traywin->parent, traywin->x, traywin->y, traywin->width, traywin->height);
         }
-        if (!traywin->reparented)
-            reparent_icon(traywin);
+        if (!traywin->reparented) {
+            if (!reparent_icon(traywin)) {
+                l = next;
+                continue;
+            }
+        }
+        i++;
+        l = next;
     }
     refresh_systray = TRUE;
 }
