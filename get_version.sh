@@ -5,7 +5,7 @@ DIRTY=""
 VERSION=""
 
 OLD_DIR=$(pwd)
-cd ${SCRIPT_DIR}
+cd "${SCRIPT_DIR}"
 
 if [ -d .git ] && git status 1>/dev/null 2>/dev/null
 then
