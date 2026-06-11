@@ -828,15 +828,20 @@ gboolean read_execp(void *obj)
         if (!execp->backend->has_icon) {
             execp->backend->text = strdup(execp->backend->buf_stdout);
         } else {
-            char *text = strchr(execp->backend->buf_stdout, '\n');
-            if (text) {
-                *text = '\0';
-                text++;
-                execp->backend->text = strdup(text);
+            // Use a local copy to avoid mutating buf_stdout in-place
+            char *buf_copy = strdup(execp->backend->buf_stdout);
+            if (buf_copy) {
+                char *newline = strchr(buf_copy, '\n');
+                if (newline) {
+                    *newline = '\0';
+                    execp->backend->text = strdup(newline + 1);
+                } else {
+                    execp->backend->text = strdup("");
+                }
+                execp->backend->icon_path = buf_copy;
             } else {
                 execp->backend->text = strdup("");
             }
-            execp->backend->icon_path = strdup(execp->backend->buf_stdout);
         }
         if (execp->backend->text) {
             int len = (int)strlen(execp->backend->text);
@@ -906,15 +911,21 @@ gboolean read_execp(void *obj)
             if (!execp->backend->has_icon) {
                 execp->backend->text = strdup(execp->backend->buf_stdout);
             } else {
-                char *text = strchr(execp->backend->buf_stdout, '\n');
-                if (text) {
-                    *text = '\0';
-                    text++;
-                    execp->backend->text = strdup(text);
+                // Use a local copy to avoid mutating buf_stdout in-place
+                char *buf_copy = strdup(execp->backend->buf_stdout);
+                if (buf_copy) {
+                    char *newline = strchr(buf_copy, '\n');
+                    if (newline) {
+                        *newline = '\0';
+                        execp->backend->text = strdup(newline + 1);
+                    } else {
+                        execp->backend->text = strdup("");
+                    }
+                    execp->backend->icon_path = expand_tilde(buf_copy);
+                    free(buf_copy);
                 } else {
                     execp->backend->text = strdup("");
                 }
-                execp->backend->icon_path = expand_tilde(execp->backend->buf_stdout);
             }
             if (execp->backend->text) {
                 size_t len = strlen(execp->backend->text);
