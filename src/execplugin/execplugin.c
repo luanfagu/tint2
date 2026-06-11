@@ -838,9 +838,11 @@ gboolean read_execp(void *obj)
             }
             execp->backend->icon_path = strdup(execp->backend->buf_stdout);
         }
-        int len = strlen(execp->backend->text);
-        if (len > 0 && execp->backend->text[len - 1] == '\n')
-            execp->backend->text[len - 1] = '\0';
+        if (execp->backend->text) {
+            int len = (int)strlen(execp->backend->text);
+            if (len > 0 && execp->backend->text[len - 1] == '\n')
+                execp->backend->text[len - 1] = '\0';
+        }
         execp->backend->buf_stdout_length = 0;
         execp->backend->buf_stdout[execp->backend->buf_stdout_length] = '\0';
         // Handle stderr
@@ -914,9 +916,11 @@ gboolean read_execp(void *obj)
                 }
                 execp->backend->icon_path = expand_tilde(execp->backend->buf_stdout);
             }
-            size_t len = strlen(execp->backend->text);
-            if (len > 0 && execp->backend->text[len - 1] == '\n')
-                execp->backend->text[len - 1] = '\0';
+            if (execp->backend->text) {
+                size_t len = strlen(execp->backend->text);
+                if (len > 0 && execp->backend->text[len - 1] == '\n')
+                    execp->backend->text[len - 1] = '\0';
+            }
 
             if (end) {
                 char *next = end + 1;
